@@ -87,7 +87,7 @@ function ScreenSetup({ onStart }) {
       <div className="topbar" style={{ padding: 'clamp(14px,3vw,22px) clamp(16px,4vw,32px)', flexWrap: 'wrap', gap: 8 }}>
         <Logo />
         <span className="pill" style={{ background: 'var(--paper)', fontSize: 'clamp(11px,1.5vw,13px)' }}>
-          EDUCATOR · CLASS 4B
+          EDUCATOR · COMMONSENSE MEDIA
         </span>
       </div>
 

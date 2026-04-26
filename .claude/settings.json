@@ -19,7 +19,15 @@
       "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys log --oneline origin/main -5)",
       "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys show --name-only e788c55)",
       "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys reset --hard origin/main)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/SnapSys.html)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/SnapSys.html)",
+      "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys mv SnapSys.html index.html)",
+      "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys status)",
+      "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys commit -m ' *)",
+      "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys push origin main)",
+      "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys log --oneline -2)",
+      "Bash(git -C /Users/preciousjohnsoninyang/Downloads/snapsys commit --amend -m \"Rename SnapSys.html to index.html for Vercel deployment\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/screen-compare.jsx)",
+      "Bash(open http://localhost:3000/index.html)"
     ]
   }
 }

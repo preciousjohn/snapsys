@@ -1,4 +1,15 @@
+function useMobile() {
+  const [mobile, setMobile] = React.useState(() => window.innerWidth < 640);
+  React.useEffect(() => {
+    const handler = () => setMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return mobile;
+}
+
 function ScreenCompare({ topic, onReset }) {
+  const mobile = useMobile();
   const [selected, setSelected] = React.useState([]); // ids
   const [showFlashcards, setShowFlashcards] = React.useState(false);
 
@@ -17,10 +28,10 @@ function ScreenCompare({ topic, onReset }) {
   return (
     <div className="col" style={{ minHeight: '100vh', paddingBottom: 80 }}>
       {/* Top bar */}
-      <div className="topbar" style={{ position: 'sticky', top: 0, background: 'var(--bg)', zIndex: 5, borderBottom: '3.5px solid var(--ink)' }}>
+      <div className="topbar" style={{ position: 'sticky', top: 0, background: 'var(--bg)', zIndex: 5, borderBottom: '3.5px solid var(--ink)', padding: mobile ? '14px 16px' : '22px 32px', gap: 10 }}>
         <Logo />
-        <div className="row gap-12" style={{ alignItems: 'center' }}>
-          <span className="pill" style={{ background: 'var(--paper)' }}>SESSION COMPLETE · {window.RESPONSES.length} ROUNDS</span>
+        <div className={mobile ? 'col gap-8' : 'row gap-12'} style={{ alignItems: mobile ? 'flex-end' : 'center' }}>
+          <span className="pill" style={{ background: 'var(--paper)', fontSize: mobile ? 11 : 13 }}>SESSION COMPLETE · {window.RESPONSES.length} ROUNDS</span>
           <ChunkyButton color="var(--paper)" size="md" onClick={onReset}>
             ↺ NEW SESSION
           </ChunkyButton>
@@ -28,7 +39,7 @@ function ScreenCompare({ topic, onReset }) {
       </div>
 
       {/* Title */}
-      <div style={{ padding: '40px 32px 24px', maxWidth: 1280, margin: '0 auto', width: '100%' }}>
+      <div style={{ padding: mobile ? '24px 16px 16px' : '40px 32px 24px', maxWidth: 1280, margin: '0 auto', width: '100%' }}>
         <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: '#888', marginBottom: 8 }}>TOPIC</div>
         <h1 className="display" style={{ fontSize: 'clamp(32px, 4vw, 52px)', margin: '0 0 8px', lineHeight: 1.05 }}>
           “{topic || 'Climate change in coastal cities'}”
@@ -42,15 +53,15 @@ function ScreenCompare({ topic, onReset }) {
 
       {/* Compare panel */}
       {compareMode && (
-        <ComparePanel a={cardA} b={cardB} onClear={() => setSelected([])} />
+        <ComparePanel a={cardA} b={cardB} onClear={() => setSelected([])} mobile={mobile} />
       )}
 
       {/* Cards grid */}
-      <div style={{ padding: '8px 32px 32px', maxWidth: 1280, margin: '0 auto', width: '100%' }}>
+      <div style={{ padding: mobile ? '8px 16px 32px' : '8px 32px 32px', maxWidth: 1280, margin: '0 auto', width: '100%' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: 24,
+          gridTemplateColumns: mobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: mobile ? 16 : 24,
         }}>
           {window.RESPONSES.map((r) => (
             <ResponseCard
@@ -66,7 +77,7 @@ function ScreenCompare({ topic, onReset }) {
       </div>
 
       {/* Flashcards CTA */}
-      <div style={{ padding: '24px 32px 0', maxWidth: 1280, margin: '0 auto', width: '100%' }}>
+      <div style={{ padding: mobile ? '24px 16px 0' : '24px 32px 0', maxWidth: 1280, margin: '0 auto', width: '100%' }}>
         <div style={{
           borderTop: '3.5px dashed var(--ink)',
           paddingTop: 40,
@@ -160,51 +171,52 @@ function ResponseCard({ card, selected, dimmed, onToggle, compareIndex }) {
   );
 }
 
-function ComparePanel({ a, b, onClear }) {
+function ComparePanel({ a, b, onClear, mobile }) {
   const diff = window.diffSpans(a, b);
   return (
     <div style={{
       background: 'var(--ink)',
       color: 'white',
-      padding: '32px',
-      margin: '0 32px 32px',
+      padding: mobile ? '20px 16px' : '32px',
+      margin: mobile ? '0 16px 24px' : '0 32px 32px',
       maxWidth: 1216,
       marginLeft: 'auto',
       marginRight: 'auto',
       borderRadius: 24,
       border: '3px solid var(--ink)',
     }}>
-      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
-        <div className="row gap-16" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
-          <h3 className="display" style={{ margin: 0, fontSize: 24 }}>LET'S COMPARE</h3>
-          <div className="row gap-12" style={{ flexWrap: 'wrap' }}>
-            {diff.narratorChanged && <DiffChip color="var(--coral)" label="NARRATOR" />}
-            {diff.sourceChanged && <DiffChip color="var(--blue)" label="DATA SOURCE" />}
-            {diff.tilesChanged && <DiffChip color="var(--green)" label="TILES" />}
-            {!diff.narratorChanged && !diff.sourceChanged && !diff.tilesChanged && (
-              <span style={{ fontSize: 13, opacity: 0.6 }}>Identical inputs · pure AI variance</span>
-            )}
-          </div>
+      <div className="col" style={{ gap: 12, marginBottom: 20 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <h3 className="display" style={{ margin: 0, fontSize: mobile ? 20 : 24 }}>LET'S COMPARE</h3>
+          <button
+            onClick={onClear}
+            style={{
+              background: 'transparent',
+              color: 'white',
+              border: '2px solid white',
+              borderRadius: 999,
+              padding: '8px 16px',
+              fontFamily: 'inherit',
+              fontWeight: 700,
+              fontSize: 13,
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            ✕ CLEAR
+          </button>
         </div>
-        <button
-          onClick={onClear}
-          style={{
-            background: 'transparent',
-            color: 'white',
-            border: '2px solid white',
-            borderRadius: 999,
-            padding: '8px 16px',
-            fontFamily: 'inherit',
-            fontWeight: 700,
-            fontSize: 13,
-            cursor: 'pointer',
-          }}
-        >
-          ✕ CLEAR
-        </button>
+        <div className="row gap-12" style={{ flexWrap: 'wrap' }}>
+          {diff.narratorChanged && <DiffChip color="var(--coral)" label="NARRATOR" />}
+          {diff.sourceChanged && <DiffChip color="var(--blue)" label="DATA SOURCE" />}
+          {diff.tilesChanged && <DiffChip color="var(--green)" label="TILES" />}
+          {!diff.narratorChanged && !diff.sourceChanged && !diff.tilesChanged && (
+            <span style={{ fontSize: 13, opacity: 0.6 }}>Identical inputs · pure AI variance</span>
+          )}
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : '1fr 1fr', gap: mobile ? 16 : 24 }}>
         <CompareCard card={a} index={1} />
         <CompareCard card={b} index={2} />
       </div>
@@ -311,15 +323,18 @@ function FlashcardOverlay({ topic, onClose }) {
     startX.current = null;
   };
 
+  const isMobileOverlay = window.innerWidth < 640;
+
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 50,
       background: 'rgba(26,26,26,0.9)',
       display: 'flex', flexDirection: 'column',
-      padding: '40px 24px',
+      padding: isMobileOverlay ? '20px 16px 24px' : '40px 24px',
+      overflow: 'hidden',
     }}>
-      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', maxWidth: 900, margin: '0 auto', width: '100%' }}>
-        <div style={{ color: 'white', fontFamily: 'Archivo Black', letterSpacing: '0.05em' }}>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', maxWidth: 900, margin: '0 auto', width: '100%', flexShrink: 0 }}>
+        <div style={{ color: 'white', fontFamily: 'Archivo Black', letterSpacing: '0.05em', fontSize: isMobileOverlay ? 13 : 16 }}>
           QUESTION {idx + 1} / {questions.length}
         </div>
         <ChunkyButton color="var(--paper)" size="md" onClick={onClose}>✕ CLOSE</ChunkyButton>
@@ -335,6 +350,8 @@ function FlashcardOverlay({ topic, onClose }) {
           margin: '0 auto',
           touchAction: 'pan-y',
           userSelect: 'none',
+          overflow: 'hidden',
+          minHeight: 0,
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -342,7 +359,7 @@ function FlashcardOverlay({ topic, onClose }) {
         onPointerCancel={onPointerUp}
         onPointerLeave={onPointerUp}
       >
-        <div style={{ position: 'relative', width: '100%', height: 'min(60vh, 500px)' }}>
+        <div style={{ position: 'relative', width: '100%', height: isMobileOverlay ? 'min(52vh, 360px)' : 'min(60vh, 500px)' }}>
           {questions.map((q, i) => {
             const offset = i - idx;
             const isCurrent = offset === 0;
@@ -356,11 +373,14 @@ function FlashcardOverlay({ topic, onClose }) {
                   inset: 0,
                   background: c.bg,
                   color: c.text,
-                  transform: `translateX(calc(${offset * 110}% + ${isCurrent ? drag : 0}px)) rotate(${isCurrent ? drag * 0.04 : offset * 1.5}deg) scale(${isCurrent ? 1 : 0.96})`,
+                  fontSize: isMobileOverlay ? 'clamp(22px, 5vw, 32px)' : undefined,
+                  padding: isMobileOverlay ? '28px 24px' : undefined,
+                  transform: `translateX(calc(${offset * 110}% + ${isCurrent ? drag : 0}px)) rotate(${isCurrent ? drag * 0.05 + (i % 2 === 0 ? -1.5 : 1.5) : offset * 3 + (i % 2 === 0 ? -1.5 : 1.5)}deg) scale(${isCurrent ? 1 : 0.95})`,
                   transition: startX.current == null ? 'transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
                   zIndex: questions.length - Math.abs(offset),
                   display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
                   cursor: isCurrent ? 'grab' : 'default',
+                  overflow: 'hidden',
                 }}
               >
                 <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.08em', opacity: 0.75, fontFamily: 'Space Grotesk' }}>
@@ -376,7 +396,7 @@ function FlashcardOverlay({ topic, onClose }) {
         </div>
       </div>
 
-      <div className="row" style={{ justifyContent: 'center', alignItems: 'center', gap: 18, maxWidth: 900, margin: '0 auto', width: '100%' }}>
+      <div className="row" style={{ justifyContent: 'center', alignItems: 'center', gap: isMobileOverlay ? 12 : 18, maxWidth: 900, margin: '0 auto', width: '100%', flexShrink: 0 }}>
         <ChunkyButton color="var(--paper)" size="md" onClick={prev} style={{ opacity: idx === 0 ? 0.4 : 1 }}>← PREV</ChunkyButton>
         <div className="row gap-8">
           {questions.map((_, i) => (
