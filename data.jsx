@@ -3,7 +3,7 @@
 // All window.* globals are preserved so other files need zero changes.
 
 // ── API endpoint ──────────────────────────────────────────────────────────────
-const API_URL = "http://unfrosted-manatee-tilt.ngrok-free.dev";
+const API_URL = "https://unfrosted-manatee-tilt.ngrok-free.dev";
 
 // ── Narrator definitions (matches backend persona keys) ───────────────────────
 const NARRATORS = {
