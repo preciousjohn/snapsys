@@ -32,7 +32,7 @@ function ScreenCompare({ topic, onReset }) {
         <Logo />
         <div className={mobile ? 'col gap-8' : 'row gap-12'} style={{ alignItems: mobile ? 'flex-end' : 'center' }}>
           <span className="pill" style={{ background: 'var(--paper)', fontSize: mobile ? 11 : 13 }}>SESSION COMPLETE · {window.RESPONSES.length} ROUNDS</span>
-          <ChunkyButton color="var(--paper)" size="md" onClick={onReset}>
+          <ChunkyButton color="var(--paper)" size={mobile ? 'sm' : 'md'} onClick={onReset}>
             ↺ NEW SESSION
           </ChunkyButton>
         </div>
@@ -95,7 +95,7 @@ function ScreenCompare({ topic, onReset }) {
               Three prompts auto-generated from this session. Swipe through with the class.
             </p>
           </div>
-          <ChunkyButton color="var(--blue)" textColor="white" size="lg" onClick={() => setShowFlashcards(true)}>
+          <ChunkyButton color="var(--blue)" textColor="white" size={mobile ? 'sm' : 'lg'} onClick={() => setShowFlashcards(true)}>
             OPEN FLASHCARDS →
           </ChunkyButton>
         </div>
